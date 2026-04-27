@@ -56,6 +56,7 @@ export default async function PaymentsPage({
                 {p.payStatus}
               </span>
               {p.payStatus !== 'PAGADO' && (
+                {/* markAsPaid returns { error? } for programmatic use; cast to void for form action — Next.js ignores the return value at runtime */}
                 <form action={markAsPaid.bind(null, p.id) as unknown as (formData: FormData) => void}>
                   <button type="submit"
                     className="text-xs bg-evg-orange text-black font-bold px-3 py-1 rounded-lg">
