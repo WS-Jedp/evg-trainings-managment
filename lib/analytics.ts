@@ -17,11 +17,13 @@ export function buildHeatmapData(attendances: AttendanceRow[]) {
     if (hIdx >= 0 && hIdx < 17) matrix[day][hIdx]++
   }
 
-  return DAYS.map((day, dIdx) => ({
-    day,
-    values: HOURS.map((_, hIdx) => matrix[dIdx][hIdx]),
+  return {
     hours: HOURS,
-  }))
+    rows: DAYS.map((day, dIdx) => ({
+      day,
+      values: HOURS.map((_, hIdx) => matrix[dIdx][hIdx]),
+    })),
+  }
 }
 
 type PlayerWithCount = {
@@ -37,7 +39,9 @@ export function buildConsistencyData(players: PlayerWithCount[], today: Date) {
     const weeks = isoWeeksElapsed(p.subscriptionStart, today)
     const expected = p.weeklySessions * weeks
     const consistency =
-      weeks === 0 ? null : Math.min(100, Math.round((p._count.attendances / expected) * 100))
+      weeks === 0 || expected === 0
+        ? null
+        : Math.min(100, Math.round((p._count.attendances / expected) * 100))
 
     return {
       name: `${p.firstName} ${p.lastName}`,

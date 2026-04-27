@@ -8,7 +8,7 @@ describe('buildHeatmapData', () => {
     ]
     const data = buildHeatmapData(attendances)
     // Only 1 attendance counted (the one with checkOut)
-    const total = data.reduce((sum, row) => sum + row.values.reduce((s: number, v: number) => s + v, 0), 0)
+    const total = data.rows.reduce((sum, row) => sum + row.values.reduce((s: number, v: number) => s + v, 0), 0)
     expect(total).toBe(1)
   })
 })
