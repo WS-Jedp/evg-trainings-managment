@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Player {
+  id                 String          @id @default(cuid())
+  firstName          String
+  lastName           String
+  age                Int
+  height             Float?
+  photoUrl           String?
+
+  eps                String
+  phone              String
+  email              String
+
+  guardianName       String?
+  guardianPhone      String?
+  guardianEmail      String
+
+  weeklySessions     Int
+
+  subscriptionStart  DateTime
+  subscriptionEnd    DateTime
+  payStatus          PayStatus       @default(PENDIENTE)
+  lastReminderSentAt DateTime?
+  lastOverdueSentAt  DateTime?
+
+  attendances        Attendance[]
+  paymentHistory     PaymentRecord[]
+
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  @@index([subscriptionEnd])
+  @@index([payStatus])
+}
+
+model Attendance {
+  id        String    @id @default(cuid())
+  playerId  String
+  player    Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  checkIn   DateTime  @default(now())
+  checkOut  DateTime?
+
+  @@index([checkIn])
+}
+
+model PaymentRecord {
+  id        String   @id @default(cuid())
+  playerId  String
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  paidAt    DateTime @default(now())
+  period    String
+
+  @@unique([playerId, period])
+}
+
+enum PayStatus {
+  PAGADO
+  PENDIENTE
+  VENCIDO
+}
