@@ -8,7 +8,15 @@ if (!process.env.RESEND_API_KEY) {
   console.warn('[notifications] RESEND_API_KEY is not set — emails will fail at runtime')
 }
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy instantiate Resend to avoid errors during build when API key is missing
+let resend: Resend | null = null
+
+function getResend(): Resend {
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resend
+}
 
 export async function sendNotification(
   player: Pick<Player, 'guardianEmail' | 'guardianName' | 'firstName' | 'lastName'>,
@@ -31,7 +39,7 @@ export async function sendNotification(
           html: await render(OverdueEmail({ guardianName, playerName })),
         }
 
-  const { error } = await resend.emails.send({
+  const { error } = await getResend().emails.send({
     from: fromEmail,
     to: player.guardianEmail,
     subject,
