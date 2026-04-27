@@ -15,6 +15,9 @@ export async function requireAuth() {
 
 /** Validate CRON_SECRET bearer token. Use only in API route handlers. */
 export function requireCronSecret(req: Request): boolean {
+  const secret = process.env.CRON_SECRET
+  // Fail closed: if secret is not configured, deny all requests
+  if (!secret) return false
   const auth = req.headers.get('authorization') ?? ''
-  return auth === `Bearer ${process.env.CRON_SECRET}`
+  return auth === `Bearer ${secret}`
 }

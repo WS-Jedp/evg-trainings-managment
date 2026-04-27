@@ -13,15 +13,17 @@ export async function GET(req: NextRequest) {
   const threeDaysAgoStart = startOfDayUTC(new Date(now.getTime() - 3 * 86400000))
   const todayStart = startOfDayUTC(now)
 
+  // Only PENDIENTE players — VENCIDO players have already received the overdue notice
   const players = await prisma.player.findMany({
     where: {
       subscriptionEnd: { lt: threeDaysAgoStart },
-      payStatus: { not: 'PAGADO' },
+      payStatus: { notIn: ['PAGADO', 'VENCIDO'] },
       OR: [
         { lastOverdueSentAt: null },
         { lastOverdueSentAt: { lt: todayStart } },
       ],
     },
+    select: { id: true, guardianEmail: true, guardianName: true, firstName: true, lastName: true },
   })
 
   const results = await Promise.allSettled(

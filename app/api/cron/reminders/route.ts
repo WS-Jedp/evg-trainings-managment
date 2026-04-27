@@ -24,15 +24,17 @@ export async function GET(req: NextRequest) {
         { lastReminderSentAt: { lt: todayStart } },
       ],
     },
+    select: { id: true, guardianEmail: true, guardianName: true, firstName: true, lastName: true },
   })
 
   const results = await Promise.allSettled(
     players.map(async player => {
-      await sendNotification(player, 'reminder')
+      // Stamp FIRST — if email fails on retry the guard prevents duplicates.
       await prisma.player.update({
         where: { id: player.id },
         data: { lastReminderSentAt: now },
       })
+      await sendNotification(player, 'reminder')
     })
   )
 
