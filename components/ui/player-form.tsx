@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useFormStatus } from 'react-dom'
 
 interface PlayerFormProps {
   action: (formData: FormData) => Promise<void>
@@ -20,6 +21,19 @@ interface PlayerFormProps {
   showSubscriptionStart?: boolean
 }
 
+function SubmitButton() {
+  const { pending } = useFormStatus()
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="w-full bg-evg-orange text-black font-bold py-3 rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
+    >
+      {pending ? 'Guardando...' : 'Guardar'}
+    </button>
+  )
+}
+
 export function PlayerForm({ action, defaultValues = {}, showSubscriptionStart = true }: PlayerFormProps) {
   const [age, setAge] = useState(defaultValues.age ?? 18)
 
@@ -33,7 +47,7 @@ export function PlayerForm({ action, defaultValues = {}, showSubscriptionStart =
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <input name="age" type="number" placeholder="Edad" value={age}
+        <input name="age" type="number" placeholder="Edad" value={age} min={1} max={99}
           onChange={e => setAge(Number(e.target.value))} required className="input-field" />
         <input name="height" type="number" step="0.01" placeholder="Altura (m) — opcional"
           defaultValue={defaultValues.height} className="input-field" />
@@ -60,8 +74,8 @@ export function PlayerForm({ action, defaultValues = {}, showSubscriptionStart =
 
       <select name="weeklySessions" defaultValue={defaultValues.weeklySessions ?? 3}
         required className="input-field">
-        <option value={3}>3 sesiones/semana</option>
-        <option value={5}>5 sesiones/semana</option>
+        <option value="3">3 sesiones/semana</option>
+        <option value="5">5 sesiones/semana</option>
       </select>
 
       {showSubscriptionStart && (
@@ -72,10 +86,7 @@ export function PlayerForm({ action, defaultValues = {}, showSubscriptionStart =
         </div>
       )}
 
-      <button type="submit"
-        className="w-full bg-evg-orange text-black font-bold py-3 rounded-lg">
-        Guardar
-      </button>
+      <SubmitButton />
     </form>
   )
 }
