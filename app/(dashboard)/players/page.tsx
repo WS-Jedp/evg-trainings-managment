@@ -31,7 +31,7 @@ export default async function PlayersPage({
         <h1 className="font-varsity text-evg-orange text-2xl">Jugadores</h1>
         <Link href="/players/new"
           className="bg-evg-orange text-black font-bold px-4 py-2 rounded-lg text-sm">
-          + Nuevo
+          + Nuevo Jugador
         </Link>
       </div>
 
