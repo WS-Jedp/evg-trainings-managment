@@ -56,7 +56,7 @@ export default async function PaymentsPage({
                 {p.payStatus}
               </span>
               {p.payStatus !== 'PAGADO' && (
-                <form action={markAsPaid.bind(null, p.id) as any}>
+                <form action={markAsPaid.bind(null, p.id) as unknown as (formData: FormData) => void}>
                   <button type="submit"
                     className="text-xs bg-evg-orange text-black font-bold px-3 py-1 rounded-lg">
                     Pagado
