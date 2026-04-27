@@ -31,8 +31,12 @@ export async function checkIn(playerId: string): Promise<{ error?: string }> {
   return {}
 }
 
-export async function checkOut(attendanceId: string) {
+export async function checkOut(attendanceId: string): Promise<{ error?: string }> {
   await requireAuth()
+
+  const record = await prisma.attendance.findUnique({ where: { id: attendanceId } })
+  if (!record) return { error: 'Registro no encontrado.' }
+  if (record.checkOut !== null) return { error: 'La salida ya fue registrada.' }
 
   await prisma.attendance.update({
     where: { id: attendanceId },
@@ -41,4 +45,5 @@ export async function checkOut(attendanceId: string) {
 
   revalidatePath('/')
   revalidatePath('/attendance')
+  return {}
 }
