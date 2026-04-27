@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@/lib/supabase/server'
 
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const MAX_BYTES = 5 * 1024 * 1024 // 5 MB
+
 export async function POST(req: NextRequest) {
   // 1. Validate session using the project's existing helper (anon key)
   const supabaseAuth = await createClient()
@@ -19,7 +22,17 @@ export async function POST(req: NextRequest) {
   const file = formData.get('file') as File
   if (!file) return NextResponse.json({ error: 'No file' }, { status: 400 })
 
-  const filename = `${crypto.randomUUID()}-${file.name}`
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return NextResponse.json({ error: 'Invalid file type. Allowed: JPEG, PNG, WebP' }, { status: 400 })
+  }
+  if (file.size > MAX_BYTES) {
+    return NextResponse.json({ error: 'File too large. Maximum 5 MB' }, { status: 400 })
+  }
+
+  // Use a clean extension derived from MIME type to avoid path traversal via file.name
+  const ext = file.type === 'image/jpeg' ? 'jpg' : file.type === 'image/png' ? 'png' : 'webp'
+  const filename = `${crypto.randomUUID()}.${ext}`
+
   const { error } = await supabaseAdmin.storage
     .from('players')
     .upload(filename, file, { contentType: file.type })

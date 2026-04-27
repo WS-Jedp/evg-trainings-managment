@@ -103,6 +103,9 @@ export default async function PlayerProfilePage({ params }: { params: Promise<{ 
               </div>
             )
           })}
+          {player.attendances.length === 0 && (
+            <p className="text-zinc-500 text-sm">Sin asistencias registradas.</p>
+          )}
         </div>
       </div>
     </div>
