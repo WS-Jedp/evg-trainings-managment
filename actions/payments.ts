@@ -1,38 +1,48 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { calcSubscriptionEnd, formatPeriod } from '@/lib/dates'
 
-export async function markAsPaid(playerId: string) {
+export async function markAsPaid(playerId: string): Promise<{ error?: string }> {
   await requireAuth()
 
   const player = await prisma.player.findUnique({ where: { id: playerId } })
-  if (!player) throw new Error('Player not found')
+  if (!player) return { error: 'Jugador no encontrado.' }
 
   // Guard: if already PAGADO, subscriptionEnd has already been advanced.
   // Calling markAsPaid again would silently advance it a second month.
-  if (player.payStatus === 'PAGADO') return
+  if (player.payStatus === 'PAGADO') return { error: 'El jugador ya está al día.' }
 
   const period = formatPeriod(player.subscriptionEnd)
   const newSubscriptionEnd = calcSubscriptionEnd(player.subscriptionEnd)
 
-  await prisma.$transaction([
-    prisma.player.update({
-      where: { id: playerId },
-      data: {
-        payStatus: 'PAGADO',
-        subscriptionEnd: newSubscriptionEnd,
-        lastReminderSentAt: null,
-        lastOverdueSentAt: null,
-      },
-    }),
-    prisma.paymentRecord.create({
-      data: { playerId, period },
-    }),
-  ])
+  try {
+    await prisma.$transaction([
+      prisma.player.update({
+        where: { id: playerId },
+        data: {
+          payStatus: 'PAGADO',
+          subscriptionEnd: newSubscriptionEnd,
+          lastReminderSentAt: null,
+          lastOverdueSentAt: null,
+        },
+      }),
+      prisma.paymentRecord.create({
+        data: { playerId, period },
+      }),
+    ])
+  } catch (err) {
+    // P2002: unique constraint — concurrent request already recorded this payment
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      return { error: 'El pago de este período ya fue registrado.' }
+    }
+    throw err
+  }
 
   revalidatePath('/payments')
   revalidatePath(`/players/${playerId}`)
+  return {}
 }
