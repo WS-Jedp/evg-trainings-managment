@@ -10,7 +10,7 @@
   --color-foreground: var(--foreground);
   --color-evg-orange: #FF8C00;
   --color-evg-black: #000000;
-  --font-varsity: var(--font-varsity);
+  --font-family-varsity: var(--font-varsity);
 }
 
 body {
