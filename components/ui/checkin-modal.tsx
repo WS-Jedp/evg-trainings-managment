@@ -1,5 +1,5 @@
 'use client'
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useRef } from 'react'
 import { checkIn } from '@/actions/attendance'
 
 interface Player { id: string; firstName: string; lastName: string }
@@ -9,12 +9,22 @@ export function CheckInModal({ onClose }: { onClose: () => void }) {
   const [results, setResults] = useState<Player[]>([])
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const abortRef = useRef<AbortController | null>(null)
 
   async function search(q: string) {
     setQuery(q)
+    // Cancel any in-flight request before issuing a new one
+    abortRef.current?.abort()
     if (!q) { setResults([]); return }
-    const res = await fetch(`/api/players/search?q=${encodeURIComponent(q)}`)
-    setResults(await res.json())
+    const controller = new AbortController()
+    abortRef.current = controller
+    try {
+      const res = await fetch(`/api/players/search?q=${encodeURIComponent(q)}`, { signal: controller.signal })
+      setResults(await res.json())
+    } catch (err: unknown) {
+      // Ignore AbortError — a newer search superseded this one
+      if (err instanceof Error && err.name !== 'AbortError') setError(err.message)
+    }
   }
 
   async function handleCheckIn(playerId: string) {

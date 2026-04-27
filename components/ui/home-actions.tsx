@@ -1,12 +1,24 @@
 'use client'
 import { useState } from 'react'
-import { CheckInModal } from './checkin-modal'
-import { CheckoutList } from './checkout-list'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { CheckInModal } from './checkin-modal'
+import { CheckoutList, type OpenAttendance } from './checkout-list'
 
-export function HomeActions({ openAttendances }: { openAttendances: any[] }) {
+export function HomeActions({ openAttendances }: { openAttendances: OpenAttendance[] }) {
+  const router = useRouter()
   const [showCheckin, setShowCheckin] = useState(false)
   const [showCheckout, setShowCheckout] = useState(false)
+
+  function handleCheckinClose() {
+    setShowCheckin(false)
+    router.refresh()
+  }
+
+  function handleCheckoutDone() {
+    setShowCheckout(false)
+    router.refresh()
+  }
 
   return (
     <>
@@ -25,11 +37,11 @@ export function HomeActions({ openAttendances }: { openAttendances: any[] }) {
         </Link>
       </div>
 
-      {showCheckin && <CheckInModal onClose={() => setShowCheckin(false)} />}
+      {showCheckin && <CheckInModal onClose={handleCheckinClose} />}
       {showCheckout && (
         <CheckoutList
           attendances={openAttendances}
-          onDone={() => setShowCheckout(false)}
+          onDone={handleCheckoutDone}
         />
       )}
     </>

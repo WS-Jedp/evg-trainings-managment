@@ -1,8 +1,8 @@
 'use client'
-import { useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import { checkOut } from '@/actions/attendance'
 
-interface OpenAttendance {
+export interface OpenAttendance {
   id: string
   checkIn: Date
   player: { firstName: string; lastName: string }
@@ -16,11 +16,17 @@ export function CheckoutList({
   onDone: () => void
 }) {
   const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<string | null>(null)
 
   function handleCheckOut(id: string) {
+    setError(null)
     startTransition(async () => {
-      await checkOut(id)
-      onDone()
+      const result = await checkOut(id)
+      if (result?.error) {
+        setError(result.error)
+      } else {
+        onDone()
+      }
     })
   }
 
@@ -28,6 +34,7 @@ export function CheckoutList({
     <div className="fixed inset-0 bg-black/80 flex items-end z-50" onClick={onDone}>
       <div className="bg-zinc-900 w-full rounded-t-2xl p-4" onClick={e => e.stopPropagation()}>
         <h2 className="font-varsity text-evg-orange text-xl mb-4">Registrar Salida</h2>
+        {error && <p className="text-red-400 text-sm mb-2">{error}</p>}
         <div className="space-y-2 max-h-64 overflow-y-auto">
           {attendances.map(a => (
             <button key={a.id} onClick={() => handleCheckOut(a.id)} disabled={isPending}
