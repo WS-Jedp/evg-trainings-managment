@@ -8,7 +8,7 @@ interface Props {
 export function OverdueEmail({ guardianName, playerName }: Props) {
   return (
     <Html>
-      <Body style={{ fontFamily: 'sans-serif', background: '#000', color: '#fff', padding: 24 }}>
+      <Body style={{ fontFamily: 'sans-serif', background: '#000', color: '#fff', padding: '24px' }}>
         <Heading style={{ color: '#FF8C00' }}>EVG Training 🏀</Heading>
         <Text>
           Hola {guardianName}, notamos que el pago de la suscripción de{' '}
