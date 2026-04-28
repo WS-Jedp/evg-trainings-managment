@@ -28,7 +28,16 @@ export async function createPlayer(formData: FormData) {
 
   const subscriptionStart = new Date(subscriptionStartRaw)
   subscriptionStart.setUTCHours(0, 0, 0, 0)
-  const subscriptionEnd = calcSubscriptionEnd(subscriptionStart)
+
+  const subscriptionEndRaw = formData.get('subscriptionEnd') as string | null
+  const subscriptionEnd = subscriptionEndRaw
+    ? (() => { const d = new Date(subscriptionEndRaw); d.setUTCHours(0, 0, 0, 0); return d })()
+    : calcSubscriptionEnd(subscriptionStart)
+
+  const payStatusRaw = (formData.get('payStatus') as string) || 'PENDIENTE'
+  const payStatus = (['PAGADO', 'PENDIENTE', 'VENCIDO'].includes(payStatusRaw)
+    ? payStatusRaw
+    : 'PENDIENTE') as 'PAGADO' | 'PENDIENTE' | 'VENCIDO'
 
   const photoUrl = (formData.get('photoUrl') as string) || null
 
@@ -49,6 +58,7 @@ export async function createPlayer(formData: FormData) {
         weeklySessions,
         subscriptionStart,
         subscriptionEnd,
+        payStatus,
       },
     })
   } catch {

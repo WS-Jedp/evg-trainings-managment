@@ -3,6 +3,9 @@
 :root {
   --background: #000000;
   --foreground: #ffffff;
+  --orange: #FF8C00;
+  --card-bg: #111111;
+  --nav-height: 68px;
 }
 
 @theme inline {
@@ -16,10 +19,87 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
 }
 
 @layer components {
   .input-field {
-    @apply w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-evg-orange;
+    @apply w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 text-sm
+           focus:outline-none focus:border-evg-orange/70 focus:ring-1 focus:ring-evg-orange/20 transition-colors duration-150;
   }
+
+  .card {
+    @apply bg-zinc-900 border border-white/[0.07] rounded-2xl;
+  }
+
+  .card-padded {
+    @apply bg-zinc-900 border border-white/[0.07] rounded-2xl p-4;
+  }
+
+  .card-label {
+    @apply text-zinc-500 text-xs font-medium uppercase tracking-widest mb-3;
+  }
+
+  .list-row {
+    @apply bg-zinc-900 border border-white/[0.06] rounded-xl px-4 py-3.5 flex items-center justify-between active:bg-zinc-800 transition-colors duration-100;
+  }
+
+  .badge-paid {
+    @apply text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800/50 tracking-wide uppercase;
+  }
+
+  .badge-pending {
+    @apply text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-950 text-amber-400 border border-amber-800/50 tracking-wide uppercase;
+  }
+
+  .badge-overdue {
+    @apply text-[10px] font-bold px-2.5 py-1 rounded-full bg-red-950 text-red-400 border border-red-800/50 tracking-wide uppercase;
+  }
+
+  .btn-primary {
+    @apply bg-evg-orange text-black font-bold py-4 rounded-2xl flex items-center justify-center gap-2 text-base active:scale-[0.98] transition-transform duration-100 shadow-[0_0_20px_rgba(255,140,0,0.3)];
+  }
+
+  .btn-secondary {
+    @apply border border-white/20 text-white font-semibold py-4 rounded-2xl flex items-center justify-center gap-2 text-base active:bg-white/5 transition-colors duration-100;
+  }
+
+  .btn-tertiary {
+    @apply border border-evg-orange/60 text-evg-orange font-semibold py-4 rounded-2xl flex items-center justify-center gap-2 text-base active:bg-evg-orange/5 transition-colors duration-100;
+  }
+
+  .glass-sheet {
+    @apply w-full rounded-t-3xl p-5 pt-6 bg-zinc-950/95 backdrop-blur-2xl border-t border-white/[0.08];
+  }
+
+  .metric-number {
+    font-family: var(--font-varsity), sans-serif;
+    @apply text-evg-orange leading-none;
+    font-size: clamp(2.5rem, 12vw, 4rem);
+  }
+
+  .page-title {
+    font-family: var(--font-varsity), sans-serif;
+    @apply text-white leading-none tracking-wide;
+    font-size: clamp(1.75rem, 7vw, 2.25rem);
+  }
+
+  .divider {
+    @apply border-t border-white/[0.07];
+  }
+}
+
+@layer utilities {
+  .pb-safe {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+}
+
+@keyframes orange-pulse {
+  0%, 100% { box-shadow: 0 0 6px 1px rgba(255, 140, 0, 0.5); }
+  50%       { box-shadow: 0 0 12px 3px rgba(255, 140, 0, 0.3); }
+}
+
+.glow-pulse {
+  animation: orange-pulse 2s ease-in-out infinite;
 }

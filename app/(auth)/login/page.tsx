@@ -26,10 +26,27 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        <h1 className="font-varsity text-evg-orange text-4xl text-center mb-8">EVG</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      {/* Decorative radial orange glow */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(255,140,0,0.10) 0%, transparent 70%)' }}
+      />
+
+      <div className="w-full max-w-sm relative z-10">
+        {/* Brand block */}
+        <div className="text-center mb-10">
+          <p className="text-zinc-600 text-xs uppercase tracking-[0.3em] font-medium mb-2">Academia</p>
+          <h1
+            className="font-varsity text-white leading-none"
+            style={{ fontSize: 'clamp(4rem, 22vw, 6rem)', letterSpacing: '0.04em' }}
+          >
+            EVG
+          </h1>
+          <div className="mt-3 mx-auto w-12 h-0.5 bg-evg-orange rounded-full" />
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-3">
           <input
             type="email"
             placeholder="Correo"
@@ -46,11 +63,11 @@ export default function LoginPage() {
             required
             className="input-field"
           />
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-red-400 text-sm pl-1">{error}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-evg-orange text-black font-bold py-3 rounded-lg disabled:opacity-50"
+            className="btn-primary w-full mt-2 disabled:opacity-50 disabled:shadow-none"
           >
             {loading ? 'Ingresando...' : 'Ingresar'}
           </button>

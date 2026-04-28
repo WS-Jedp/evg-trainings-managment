@@ -11,8 +11,8 @@ export default async function EditPlayerPage({ params }: { params: Promise<{ id:
   const action = updatePlayer.bind(null, id)
 
   return (
-    <div className="p-4">
-      <h1 className="font-varsity text-evg-orange text-2xl mb-6">Editar Jugador</h1>
+    <div className="px-4 pt-6 pb-4">
+      <h1 className="page-title mb-6">Editar Jugador</h1>
       <PlayerForm
         action={action}
         showSubscriptionStart={false}

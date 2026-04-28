@@ -19,42 +19,44 @@ export default async function PlayersPage({
     orderBy: { lastName: 'asc' },
   })
 
-  const statusColors: Record<string, string> = {
-    PAGADO: 'bg-green-900 text-green-400',
-    PENDIENTE: 'bg-yellow-900 text-yellow-400',
-    VENCIDO: 'bg-red-900 text-red-400',
+  const statusClasses: Record<string, string> = {
+    PAGADO:   'badge-paid',
+    PENDIENTE: 'badge-pending',
+    VENCIDO:  'badge-overdue',
   }
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="font-varsity text-evg-orange text-2xl">Jugadores</h1>
+    <div className="px-4 pt-6 pb-4">
+      <div className="flex justify-between items-center mb-5">
+        <h1 className="page-title">Jugadores</h1>
         <Link href="/players/new"
-          className="bg-evg-orange text-black font-bold px-4 py-2 rounded-lg text-sm">
-          + Nuevo Jugador
+          className="bg-evg-orange text-black font-bold px-4 py-2 rounded-xl text-sm shadow-orange-glow-sm active:scale-95 transition-transform">
+          + Nuevo
         </Link>
       </div>
 
-      <form className="mb-4">
+      <form className="mb-5">
         <input name="q" placeholder="Buscar jugador..." defaultValue={q ?? ''}
           className="input-field" />
       </form>
 
       <div className="space-y-2">
         {players.map(p => (
-          <Link key={p.id} href={`/players/${p.id}`}
-            className="flex items-center justify-between bg-zinc-900 rounded-lg px-4 py-3">
+          <Link key={p.id} href={`/players/${p.id}`} className="list-row">
             <div>
-              <p className="font-semibold">{p.firstName} {p.lastName}</p>
-              <p className="text-zinc-400 text-sm">{p.weeklySessions}x/semana</p>
+              <p className="text-white font-semibold text-sm">{p.firstName} {p.lastName}</p>
+              <p className="text-zinc-500 text-xs mt-0.5">{p.weeklySessions}x por semana</p>
             </div>
-            <span className={`text-xs font-bold px-2 py-1 rounded ${statusColors[p.payStatus]}`}>
-              {p.payStatus}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className={statusClasses[p.payStatus]}>{p.payStatus}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#52525b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </div>
           </Link>
         ))}
         {players.length === 0 && (
-          <p className="text-zinc-500 text-center py-8">No se encontraron jugadores.</p>
+          <p className="text-zinc-600 text-sm text-center py-10">No se encontraron jugadores.</p>
         )}
       </div>
     </div>

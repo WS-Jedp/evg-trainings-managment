@@ -13,29 +13,38 @@ export default async function AttendancePage() {
   })
 
   return (
-    <div className="p-4">
-      <h1 className="font-varsity text-evg-orange text-2xl mb-4">Asistencia Hoy</h1>
+    <div className="px-4 pt-6 pb-4">
+      <div className="flex items-baseline justify-between mb-5">
+        <h1 className="page-title">Asistencia</h1>
+        <span className="text-zinc-500 text-xs">Hoy · {attendances.length}</span>
+      </div>
+
       <div className="space-y-2">
         {attendances.map(a => {
+          const isActive = !a.checkOut
           const duration = a.checkOut
             ? Math.round((a.checkOut.getTime() - a.checkIn.getTime()) / 60000)
             : null
           return (
-            <div key={a.id} className="bg-zinc-900 rounded-lg px-4 py-3">
-              <p className="font-semibold">{a.player.firstName} {a.player.lastName}</p>
-              <p className="text-zinc-400 text-sm">
-                {new Date(a.checkIn).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
-                {' → '}
-                {a.checkOut
-                  ? `${new Date(a.checkOut).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })} (${duration} min)`
-                  : <span className="text-evg-orange">En sesión</span>
+            <div key={a.id} className={`bg-zinc-900 border rounded-xl px-4 py-3.5 ${isActive ? 'border-evg-orange/30' : 'border-white/[0.06]'}`}>
+              <div className="flex items-center justify-between">
+                <p className="text-white font-semibold text-sm">
+                  {a.player.firstName} {a.player.lastName}
+                </p>
+                {isActive
+                  ? <span className="text-[10px] font-bold text-evg-orange bg-evg-orange/10 border border-evg-orange/30 px-2 py-1 rounded-full uppercase tracking-wide">En sesión</span>
+                  : <span className="text-zinc-500 text-xs font-mono">{duration} min</span>
                 }
+              </div>
+              <p className="text-zinc-600 text-xs mt-1 font-mono">
+                {new Date(a.checkIn).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
+                {a.checkOut && ` → ${new Date(a.checkOut).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}`}
               </p>
             </div>
           )
         })}
         {attendances.length === 0 && (
-          <p className="text-zinc-500 text-center py-8">Sin asistencias hoy.</p>
+          <p className="text-zinc-600 text-sm text-center py-10">Sin asistencias hoy.</p>
         )}
       </div>
     </div>
