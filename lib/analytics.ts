@@ -26,7 +26,7 @@ export function buildHeatmapData(attendances: AttendanceRow[]) {
   }
 }
 
-type PlayerWithCount = {
+export type PlayerWithCount = {
   firstName: string
   lastName: string
   weeklySessions: number

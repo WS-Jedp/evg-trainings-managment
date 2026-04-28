@@ -1,6 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { startOfDayUTC } from '@/lib/dates'
-import { buildHeatmapData, buildConsistencyData } from '@/lib/analytics'
+import { buildHeatmapData, buildConsistencyData, PlayerWithCount } from '@/lib/analytics'
 import { WeeklyBarChart, PayStatusPie } from '@/components/ui/charts'
 import { PayStatus } from '@prisma/client'
 
@@ -8,7 +7,7 @@ async function getData() {
   const now = new Date()
 
   // Last 8 weeks of attendances (all, for bar chart)
-  const eightWeeksAgo = startOfDayUTC(new Date(now.getTime() - 8 * 7 * 86400000))
+  const eightWeeksAgo = new Date(now.getTime() - 8 * 7 * 86400000)
   const allAttendances = await prisma.attendance.findMany({
     where: { checkIn: { gte: eightWeeksAgo } },
     select: { checkIn: true, checkOut: true },
@@ -60,7 +59,7 @@ export default async function AnalyticsPage() {
     name: s,
     value: payStatusCounts.find(p => p.payStatus === s)?._count ?? 0,
   }))
-  const consistencyData = buildConsistencyData(players as any, now)
+  const consistencyData = buildConsistencyData(players as PlayerWithCount[], now)
     .sort((a, b) => {
       if (a.consistency === null && b.consistency === null) return 0
       if (a.consistency === null) return 1
@@ -91,8 +90,8 @@ export default async function AnalyticsPage() {
           <thead>
             <tr>
               <th className="text-left pr-2 text-zinc-500">Día</th>
-              {Array.from({ length: 17 }, (_, i) => (
-                <th key={i} className="text-zinc-600 px-1">{i + 6}h</th>
+              {heatmap.hours.map(h => (
+                <th key={h} className="text-zinc-600 px-1">{h}h</th>
               ))}
             </tr>
           </thead>
