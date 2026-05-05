@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { calcSubscriptionEnd, formatPeriod } from '@/lib/dates'
@@ -36,7 +35,7 @@ export async function markAsPaid(playerId: string): Promise<{ error?: string }> 
     ])
   } catch (err) {
     // P2002: unique constraint — concurrent request already recorded this payment
-    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+    if ((err as { code?: string })?.code === 'P2002') {
       return { error: 'El pago de este período ya fue registrado.' }
     }
     throw err
