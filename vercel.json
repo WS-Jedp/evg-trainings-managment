@@ -1,7 +1,3 @@
 {
-  "version": 2,
-  "crons": [
-    { "path": "/api/cron/reminders", "schedule": "0 14 * * *" },
-    { "path": "/api/cron/overdue",   "schedule": "5 14 * * *" }
-  ]
+  "version": 2
 }
